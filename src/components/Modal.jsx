@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
@@ -17,40 +17,56 @@ const schema = yup.object({
   birthday: yup.string().required('Birthday is required')
 }).required()
 
-const Modal = ({modalActive, setModalActive, getAllUsers}) => {
-  const [userStage, setUserStage] = useState({})
+const Modal = ({ modalActive, setModalActive, getAllUsers, dataEdit, setDataEdit }) => {
   const { register, handleSubmit, reset, formState:{ errors } } = useForm({
     resolver: yupResolver(schema)
   })
 
   const defaultValues = {
-    first_name: "",
-    last_name: "",
-    email: "",
-    password: "",
-    birthday: "",
+    first_name: dataEdit.first_name ?? '',
+    last_name: dataEdit?.last_name ?? '',
+    email: dataEdit?.email ?? '',
+    password: dataEdit?.password ?? '',
+    birthday: dataEdit?.birthday ?? ''
   }
   
   const handleCloseModal = () => {
+    setDataEdit({})
     reset(defaultValues)
     setModalActive(!modalActive)
+    getAllUsers()
   }
 
   const submit = dataUser => {
-    const url = 'https://users-crud1.herokuapp.com/users/'
-    axios.post(url, dataUser)
-    .then(res => {
-      console.log(res.data)
-      handleCloseModal()
-      getAllUsers()
-    })
-    .catch(err => console.log(err))
+    if(Object.keys(dataEdit).length){
+      const url = `https://users-crud1.herokuapp.com/users/${dataEdit.id}/`
+      axios.put(url, dataUser)
+      .then(res => {
+        console.log('Put correcto')
+        handleCloseModal()
+        getAllUsers()
+      })
+      .catch(err => console.log(err))
+    }else {
+      const url = 'https://users-crud1.herokuapp.com/users/'
+      axios.post(url, dataUser)
+      .then(res => {
+        console.log('Post correcto')
+        handleCloseModal()
+        getAllUsers()
+      })
+      .catch(err => console.log(err))
+    }
   }
+
+  useEffect(() => {
+    reset(defaultValues)
+  }, [])
 
   return (
     <div className={`modal ${modalActive}`} onSubmit={handleSubmit(submit)}>
       <form>
-        <h2>New user</h2>
+        <h2>{Object.keys(dataEdit).length ? 'Edit User' : 'New User'}</h2>
         <article className="nameModal">
           <i className='bx bxs-user'></i>
           <div className="containerFirstName">
@@ -80,7 +96,7 @@ const Modal = ({modalActive, setModalActive, getAllUsers}) => {
               inputPlaceholder={'Email'} 
               inputRegister={'email'} 
               errorMessage={errors.email?.message}
-            />
+          />
         </label>
         <label htmlFor="passwordModal">
           <i className='bx bxs-lock' ></i>
@@ -90,7 +106,7 @@ const Modal = ({modalActive, setModalActive, getAllUsers}) => {
               inputPlaceholder={'Password'} 
               inputRegister={'password'} 
               errorMessage={errors.password?.message}
-            />
+          />
         </label>
         <label htmlFor="dateModal">
           <i className='bx bxs-cake' ></i>
@@ -100,18 +116,18 @@ const Modal = ({modalActive, setModalActive, getAllUsers}) => {
               inputPlaceholder={''} 
               inputRegister={'birthday'} 
               errorMessage={errors.birthday?.message}
-            />
+          />
         </label>
         <input 
           type="submit" 
-          value="Add User" 
+          value={Object.keys(dataEdit).length ? 'Save Changes' : 'Add User'} 
           className="submitModal"
         />
+        <i 
+          className='bx bx-x'
+          onClick={() => handleCloseModal()}   
+        ></i>
       </form>
-      <i 
-        className='bx bx-x'
-        onClick={() => handleCloseModal()}   
-      ></i>
     </div>
   )
 }

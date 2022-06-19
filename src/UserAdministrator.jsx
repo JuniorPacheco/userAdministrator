@@ -7,8 +7,15 @@ import axios from "axios"
 function UserAdministrator() {
   const [filters, setFilters] = useState('')
   const [modalActive, setModalActive] = useState(false)
+  const [dataEdit, setDataEdit] = useState({})
+  const [searchValue, setSearchValue] = useState('')
 
   const { users, getAllUsers } = useDataUsers()
+
+  const handleAddUser = () => {
+    setDataEdit({})
+    setModalActive(!modalActive)
+  }
 
   const deleteUser = (id) => {
     const url = `https://users-crud1.herokuapp.com/users/${id}/`
@@ -28,20 +35,22 @@ function UserAdministrator() {
             onChange={e => setFilters(e.target.value)}
           >
             <option value="" >---None---</option>
-            <option value="name">Name</option>
+            <option value="first_name">First name</option>
+            <option value="last_name">Last name</option>
             <option value="email">E-mail</option>
-            <option value="date">Date</option>
+            <option value="birthday">Birthday</option>
           </select>
         </section>
         <section className={`header__searcher ${filters && 'active'}`}>
           <input 
+            onChange={e => setSearchValue(e.target.value)}
             type="text" 
             placeholder={`Search by ${filters}`}          
           />
         </section>
         <section className="header__add">
           <button
-            onClick={() => setModalActive(!modalActive)}
+            onClick={handleAddUser}
           >
           <i className='bx bx-user-plus' ></i> Add
           </button>
@@ -52,13 +61,46 @@ function UserAdministrator() {
       </header>
 
       <main className="main">
-        {users.map(user => <CardUser key={user.id} user={user} deleteUser={deleteUser} getAllUsers={getAllUsers}/>)}
+        {users.map(user => {
+          if(searchValue !== ''){
+            if(user[filters]?.includes(searchValue)){
+              return <CardUser 
+                        key={user.id} 
+                        user={user} 
+                        deleteUser={deleteUser} 
+                        getAllUsers={getAllUsers} 
+                        setDataEdit={setDataEdit} 
+                        setModalActive={setModalActive}
+                    />
+            }
+          }else {
+            return <CardUser 
+                      key={user.id} 
+                      user={user} 
+                      deleteUser={deleteUser} 
+                      getAllUsers={getAllUsers} 
+                      setDataEdit={setDataEdit} 
+                      setModalActive={setModalActive}
+                   />
+          }
+        })}
       </main>
 
       <footer className="footer">
 
       </footer>
-      <Modal modalActive={modalActive} setModalActive={setModalActive} getAllUsers={getAllUsers}/>
+      {
+        modalActive && (
+          <Modal 
+            modalActive={modalActive} 
+            setModalActive={setModalActive} 
+            getAllUsers={getAllUsers} 
+            dataEdit={dataEdit} 
+            setDataEdit={setDataEdit}
+          />
+        )
+      }
+
     </div>
   )
 }

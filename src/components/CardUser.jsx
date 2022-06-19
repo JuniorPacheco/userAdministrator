@@ -1,8 +1,13 @@
-const CardUser = ({ user, deleteUser, getAllUsers }) => {
+const CardUser = ({ user, deleteUser, setDataEdit, setModalActive }) => {
   const { id, email, password, first_name, last_name, birthday } = user
 
-  const handleDeleteUser = async () => {
-    await deleteUser(id)
+  const handleDeleteUser = () => {
+    deleteUser(id)
+  }
+
+  const handleEdit = () => {
+    setDataEdit(user)
+    setModalActive(true)
   }
 
   return (
@@ -23,7 +28,10 @@ const CardUser = ({ user, deleteUser, getAllUsers }) => {
             className='bx bxs-trash' 
             onClick={handleDeleteUser}
           ></i>
-          <i className='bx bxs-edit' ></i>
+          <i 
+            className='bx bxs-edit' 
+            onClick={handleEdit}
+          ></i>
         </section>
     </article>
   )
