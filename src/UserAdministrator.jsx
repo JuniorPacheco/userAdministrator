@@ -20,7 +20,7 @@ function UserAdministrator() {
   const deleteUser = (id) => {
     const url = `https://users-crud1.herokuapp.com/users/${id}/`
     axios.delete(url)
-    .then(res => console.log(res))
+    .then(() => console.log('Delect correct'))
     .catch(err => console.log(err))
     .finally(() => getAllUsers())
   }

@@ -1,67 +1,21 @@
-import { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
-import { yupResolver } from '@hookform/resolvers/yup'
-import * as yup from 'yup'
+import { useState } from "react"
 import InputAndError from "./InputAndError"
-import axios from "axios"
-
-const schema = yup.object({
-  first_name: yup.string().max(25, 'Very large first name').required('First name is required'),
-  last_name: yup.string().max(25, 'Very large last name').required('Last name is required'),
-  email: yup.string().email('Not a correct format').required('Email is required'),
-  password: yup.string().matches(/^[a-zA-Z0-9]{8,}$/, 'Should contain at least 8 characters')
-                        .matches(/^(?=.*\d)/, 'Should contain at least one digit')
-                        .matches(/^(?=.*[a-z])/, 'Should contain at least one lower case')
-                        .matches(/^(?=.*[A-Z])/, 'Should contain at least one upper case')
-                        .max(40, 'Very long password'), 
-  birthday: yup.string().required('Birthday is required')
-}).required()
+import ErrorMessage from "./ErrorMessage"
+import useLogicValidation from "../hooks/useLogicValidation"
+import usePutAndPost from "../hooks/usePutAndPost"
 
 const Modal = ({ modalActive, setModalActive, getAllUsers, dataEdit, setDataEdit }) => {
-  const { register, handleSubmit, reset, formState:{ errors } } = useForm({
-    resolver: yupResolver(schema)
-  })
+  const [errorAxiosRequest, setErrorAxiosRequest] = useState('')
+  const { register, handleSubmit, reset, errors } = useLogicValidation()
 
-  const defaultValues = {
-    first_name: dataEdit.first_name ?? '',
-    last_name: dataEdit?.last_name ?? '',
-    email: dataEdit?.email ?? '',
-    password: dataEdit?.password ?? '',
-    birthday: dataEdit?.birthday ?? ''
-  }
-  
-  const handleCloseModal = () => {
-    setDataEdit({})
-    reset(defaultValues)
-    setModalActive(!modalActive)
-    getAllUsers()
-  }
-
-  const submit = dataUser => {
-    if(Object.keys(dataEdit).length){
-      const url = `https://users-crud1.herokuapp.com/users/${dataEdit.id}/`
-      axios.put(url, dataUser)
-      .then(res => {
-        console.log('Put correcto')
-        handleCloseModal()
-        getAllUsers()
-      })
-      .catch(err => console.log(err))
-    }else {
-      const url = 'https://users-crud1.herokuapp.com/users/'
-      axios.post(url, dataUser)
-      .then(res => {
-        console.log('Post correcto')
-        handleCloseModal()
-        getAllUsers()
-      })
-      .catch(err => console.log(err))
-    }
-  }
-
-  useEffect(() => {
-    reset(defaultValues)
-  }, [])
+  const { submit, handleCloseModal } = usePutAndPost( 
+    setDataEdit,
+    modalActive,
+    setModalActive,
+    dataEdit, 
+    getAllUsers, 
+    reset, 
+    setErrorAxiosRequest )
 
   return (
     <div className={`modal ${modalActive}`} onSubmit={handleSubmit(submit)}>
@@ -92,7 +46,7 @@ const Modal = ({ modalActive, setModalActive, getAllUsers, dataEdit, setDataEdit
           <i className='bx bxs-envelope' ></i>
           <InputAndError 
               register={register} 
-              inputType={'email'} 
+              inputType={'text'} 
               inputPlaceholder={'Email'} 
               inputRegister={'email'} 
               errorMessage={errors.email?.message}
@@ -118,6 +72,7 @@ const Modal = ({ modalActive, setModalActive, getAllUsers, dataEdit, setDataEdit
               errorMessage={errors.birthday?.message}
           />
         </label>
+        {errorAxiosRequest && <ErrorMessage>{errorAxiosRequest}</ErrorMessage>}
         <input 
           type="submit" 
           value={Object.keys(dataEdit).length ? 'Save Changes' : 'Add User'} 

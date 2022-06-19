@@ -1,5 +1,5 @@
 const CardUser = ({ user, deleteUser, setDataEdit, setModalActive }) => {
-  const { id, email, password, first_name, last_name, birthday } = user
+  const { id, email, first_name, last_name, birthday } = user
 
   const handleDeleteUser = () => {
     deleteUser(id)
