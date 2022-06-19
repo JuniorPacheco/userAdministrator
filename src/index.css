@@ -103,6 +103,7 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 1rem;
 }
 
 .header__add button {
@@ -328,4 +329,15 @@ img {
 
 .modal .bxs-lock {
   color: #008eff;
+}
+
+/* Error Message */
+
+.errorMessage {
+  display: block;
+  background-color: #fe2323;
+  text-transform: uppercase;
+  border-radius: 4px;
+  padding: 10px;
+  margin-top: 10px;
 }

@@ -1,5 +1,10 @@
-const CardUser = ({ user }) => {
+const CardUser = ({ user, deleteUser, getAllUsers }) => {
   const { id, email, password, first_name, last_name, birthday } = user
+
+  const handleDeleteUser = async () => {
+    await deleteUser(id)
+  }
+
   return (
     <article className="cardUser">
         <section className="cardUser__name">
@@ -14,7 +19,10 @@ const CardUser = ({ user }) => {
         </section>
         <hr />
         <section className="cardUser__actions">
-          <i className='bx bxs-trash' ></i>
+          <i 
+            className='bx bxs-trash' 
+            onClick={handleDeleteUser}
+          ></i>
           <i className='bx bxs-edit' ></i>
         </section>
     </article>
