@@ -13,7 +13,6 @@ function UserAdministrator() {
   const { users, getAllUsers } = useDataUsers()
 
   const handleAddUser = () => {
-    setDataEdit({})
     setModalActive(!modalActive)
   }
 
@@ -64,24 +63,28 @@ function UserAdministrator() {
         {users.map(user => {
           if(searchValue !== ''){
             if(user[filters]?.includes(searchValue)){
-              return <CardUser 
-                        key={user.id} 
-                        user={user} 
-                        deleteUser={deleteUser} 
-                        getAllUsers={getAllUsers} 
-                        setDataEdit={setDataEdit} 
-                        setModalActive={setModalActive}
-                    />
+              return (
+                <CardUser 
+                  key={user.id} 
+                  user={user} 
+                  deleteUser={deleteUser} 
+                  getAllUsers={getAllUsers} 
+                  setDataEdit={setDataEdit} 
+                  setModalActive={setModalActive}
+                />
+              )
             }
           }else {
-            return <CardUser 
-                      key={user.id} 
-                      user={user} 
-                      deleteUser={deleteUser} 
-                      getAllUsers={getAllUsers} 
-                      setDataEdit={setDataEdit} 
-                      setModalActive={setModalActive}
-                   />
+            return (
+              <CardUser 
+                key={user.id} 
+                user={user} 
+                deleteUser={deleteUser} 
+                getAllUsers={getAllUsers} 
+                setDataEdit={setDataEdit} 
+                setModalActive={setModalActive}
+              />
+            )
           }
         })}
       </main>
