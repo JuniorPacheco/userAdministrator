@@ -194,7 +194,10 @@ img {
 }
 
 .cardUser .cardUser__name {
+  display: flex;
+  align-items: center;
   margin: 1rem 0;
+  height: 4rem;
 }
 
 .cardUser .cardUser__body {
